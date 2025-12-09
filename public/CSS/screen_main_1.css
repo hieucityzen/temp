@@ -1,0 +1,280 @@
+
+#BTT_AUTO {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 420px;
+    top: 200px;
+    z-index: 10;
+}
+
+#BTT_AUTO.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#BTT_MANUAL {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1300px;
+    top: 140px;
+    z-index: 10;
+}
+
+#BTT_MANUAL.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#MANUAL_START_DC_1 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1300px;
+    top: 240px;
+    z-index: 10;
+}
+
+#MANUAL_START_DC_1.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#MANUAL_STOP_DC1 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1300px;
+    top: 300px;
+    z-index: 10;
+}
+
+#MANUAL_STOP_DC1.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#MANUAL_START_DC_2 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1300px;
+    top: 400px;
+    z-index: 10;
+}
+
+#MANUAL_START_DC_2.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#MANUAL_STOP_DC2 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1300px;
+    top: 460px;
+    z-index: 10;
+}
+
+#MANUAL_STOP_DC2.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#AUTO_START {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 420px;
+    top: 260px;
+    z-index: 10;
+}
+
+#AUTO_START.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#AUTO_STOP {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 420px;
+    top: 320px;
+    z-index: 10;
+}
+
+/*thuc te dc1*/
+#SP_DC1 {
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1380px;
+    top: 650px;
+    z-index: 10;
+}
+/*thuc te dc2*/
+#SP_DC2 {
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 1380px;
+    top: 750px;
+    z-index: 10;
+}
+
+#RESET_SYSTEM {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 800px;
+    top: 300px;
+    z-index: 10;
+}
+
+#RESET_SYSTEM.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#RESET_DC1 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 800px;
+    top: 360px;
+    z-index: 10;
+}
+
+#RESET_DC1.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+#RESET_DC2 {
+    border: none;
+    background-color: rgb(0, 110, 255);   /* màu nền đỏ */
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    width: 200px;
+    height:40px;
+    left: 800px;
+    top: 420px;
+    z-index: 10;
+}
+
+#RESET_DC2.active {
+    background-color: #28a745;    /* màu khi bật */
+    color: white;
+}
+
+
+/* Ô nhập tốc độ đặt nằm giữa phía trên */
+/* Ô nhập tốc độ đặt ở giữa phía trên hình, chỉ canh giữa ngang */
+.sp-vai-container {
+ border: none;
+    color: rgb(255, 255, 255);          /* chữ trắng */
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    left: 800px;
+    top: 125px;
+    z-index: 10;
+}
+#SP_VAI_REF{
+    font-size: 50px;
+    height:70px;
+    width: 150px;
+}
+
+

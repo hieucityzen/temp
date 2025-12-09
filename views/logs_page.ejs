@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng thống kê hệ thống</title>
+
+    <!-- CHÚ Ý: có dấu / ở đầu để trỏ đúng thư mục public/CSS -->
+    <link rel="stylesheet" href="/CSS/logs_page.css">
+</head>
+<body>
+
+    <h1 class="logs-title">BẢNG THỐNG KÊ HỆ THỐNG</h1>
+
+    <a href="/" class="back-btn">← Trở về màn hình chính</a>
+
+    <!-- ===== BẢNG A – Lịch sử giá trị tag ===== -->
+    <div class="table-container">
+        <div class="table-title">📘 BẢNG A – Lịch sử giá trị tag</div>
+
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>BTT_AUTO</th>
+                        <th>BTT_MANUAL</th>
+                        <th>START_DC1</th>
+                        <th>STOP_DC1</th>
+                        <th>START_DC2</th>
+                        <th>STOP_DC2</th>
+                        <th>AUTO_START</th>
+                        <th>AUTO_STOP</th>
+                        <th>SP_DC1</th>
+                        <th>SP_DC2</th>
+                        <th>SP_VAI_REF</th>
+                        <th>FAULT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% history.forEach(row => { %>
+                        <tr>
+                            <td><%= row.ts %></td>
+                            <td><%= row.BTT_AUTO %></td>
+                            <td><%= row.BTT_MANUAL %></td>
+                            <td><%= row.MANUAL_START_DC_1 %></td>
+                            <td><%= row.MANUAL_STOP_DC1 %></td>
+                            <td><%= row.MANUAL_START_DC_2 %></td>
+                            <td><%= row.MANUAL_STOP_DC2 %></td>
+                            <td><%= row.AUTO_START %></td>
+                            <td><%= row.AUTO_STOP %></td>
+                            <td><%= row.SP_DC1 %></td>
+                            <td><%= row.SP_DC2 %></td>
+                            <td><%= row.SP_VAI_REF %></td>
+                            <td><%= row.SS_FAULT %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== BẢNG B – Lịch sử sự kiện ===== -->
+    <div class="table-container">
+        <div class="table-title">📙 BẢNG B – Lịch sử hành động (Event log)</div>
+
+        <div class="table-wrapper small">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Sự kiện</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% events.forEach(e => { %>
+                        <tr>
+                            <td><%= e.ts %></td>
+                            <td class="event-text"><%= e.event_text %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

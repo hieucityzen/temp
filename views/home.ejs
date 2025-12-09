@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Scada hệ thống giám sát trên internet</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="CSS/slidebar.css">
+    <link rel="stylesheet" href="CSS/screen_main.css">
+    <link rel="stylesheet" href="CSS/screen_main_1.css">
+    <link rel="stylesheet" href="CSS/screen_main_2.css">
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- JS dùng chung -->
+    <script src="js/FC1_common.js"></script>
+
+    <script>
+        var socket = io("http://localhost:3000");
+    </script>
+
+    <style>
+        /* bạn có thể chỉnh lại cho đẹp hơn */
+        .sp-vai-container{
+            text-align:center;
+            margin-top:10px;
+        }
+        .sp-vai-row{
+            margin:4px 0;
+        }
+        .sp-vai-row span{
+            font-weight:bold;
+            margin-right:4px;
+        }
+        .sp-vai-row input{
+            width:80px;
+            text-align:right;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="slidebar">
+
+        <button id="btt_Screen_Main" onclick="
+            fn_ScreenChange('Screen_Main', 'Screen_1', 'Screen_2');
+        ">MÀN HÌNH CHÍNH</button>
+
+        <!-- ======== CHỌN CHẾ ĐỘ ======== -->
+        <button id="BTT_AUTO">AUTO MODE</button>
+        <button id="BTT_MANUAL">MANUAL MODE</button>
+
+        <!-- ======== AUTO CONTROL ======== -->
+        <button id="AUTO_START">AUTO START</button>
+        <button id="AUTO_STOP">AUTO STOP</button>
+
+        <!-- ======== MANUAL CONTROL ======== -->
+        <button id="MANUAL_START_DC_1">START DC1</button>
+        <button id="MANUAL_STOP_DC1">STOP DC1</button>
+
+        <button id="MANUAL_START_DC_2">START DC2</button>
+        <button id="MANUAL_STOP_DC2">STOP DC2</button>
+
+        <!-- ======== RESET CONTROL ======== -->
+        <button id="RESET_SYSTEM">RESET HỆ THỐNG</button>
+        <button id="RESET_DC1">RESET DC THU</button>
+        <button id="RESET_DC2">RESET DC XẢ</button>
+         <!-- ======== HIỂN THỊ TỐC ĐỘ THỰC ĐC 1 ======== -->
+          <input id="SP_DC1" disabled="disabled" type="text" />
+<script>
+    fn_IOFieldDataShow("SP_DC1", "SP_DC1", 2);
+</script>
+ <!-- ======== HIỂN THỊ TỐC ĐỘ THỰC ĐC 2 ======== -->
+          <input id="SP_DC2" disabled="disabled" type="text" />
+<script>
+    fn_IOFieldDataShow("SP_DC2", "SP_DC2", 2);
+</script>
+
+
+        <button id="btt_Screen_1" onclick="window.location.href='http://localhost:3000/logs';">THỐNG KÊ</button>
+    </div>
+
+    <div id="Screen_Main">
+
+        <!-- KHU VỰC TỐC ĐỘ ĐẶT: TRÊN HIỂN THỊ, DƯỚI CHỈNH -->
+        <div class="sp-vai-container">
+            <div class="sp-vai-row">
+                <span style="margin-left: -180px; font-size: 25px; color: rgb(233, 78, 17);">Tốc độ đặt mới:</span>
+                <input id="SP_VAI_REF_SET" type="number">
+            </div>
+            <div class="sp-vai-row">
+                <input id="SP_VAI_REF_VIEW" type="number" disabled>
+            </div>
+        </div>
+
+        <img src="images/Screen.PNG">
+    </div>
+
+    <div id="Screen_1">
+        <p>CÁC THÔNG SỐ</p>
+    </div>
+
+<script>
+/******************** TRẠNG THÁI BOOL *************************/
+let tagStates = {
+    BTT_AUTO: false,
+    BTT_MANUAL: false,
+    AUTO_START: false,
+    AUTO_STOP: false,
+    MANUAL_START_DC_1: false,
+    MANUAL_STOP_DC1: false,
+    MANUAL_START_DC_2: false,
+    MANUAL_STOP_DC2: false
+};
+
+/******************** ĐỔI MÀU NÚT *************************/
+function setButtonState(btn, on) {
+    if (!btn) return;
+    if (on) {
+        btn.style.backgroundColor = "rgb(0,255,15)";
+        btn.style.color = "black";
+    } else {
+        btn.style.backgroundColor = "gray";
+        btn.style.color = "white";
+    }
+}
+
+/******************** KHOÁ NÚT THEO MODE *************************/
+function updateModeLock() {
+    const autoMode   = tagStates.BTT_AUTO;
+    const manualMode = tagStates.BTT_MANUAL;
+
+    document.getElementById("MANUAL_START_DC_1").disabled = autoMode;
+    document.getElementById("MANUAL_STOP_DC1").disabled   = autoMode;
+    document.getElementById("MANUAL_START_DC_2").disabled = autoMode;
+    document.getElementById("MANUAL_STOP_DC2").disabled   = autoMode;
+
+    document.getElementById("AUTO_START").disabled = manualMode;
+    document.getElementById("AUTO_STOP").disabled  = manualMode;
+}
+
+/******************** CẬP NHẬT NÚT BOOL *************************/
+function updateButton(tagName, value) {
+    const btn = document.getElementById(tagName);
+    const on = (value === true || value === 1);
+    tagStates[tagName] = on;
+    setButtonState(btn, on);
+    updateModeLock();
+}
+
+/******************** GỬI LỆNH BOOL *************************/
+function bindButton(tagName, socketEvent) {
+    const btn = document.getElementById(tagName);
+    if (!btn) return;
+    btn.onclick = function () {
+        socket.emit(socketEvent);
+        console.log("CLIENT send:", socketEvent);
+    };
+}
+
+// Mode
+bindButton("BTT_AUTO",   "mode_auto");
+bindButton("BTT_MANUAL", "mode_manual");
+
+// Auto
+bindButton("AUTO_START", "auto_start");
+bindButton("AUTO_STOP",  "auto_stop");
+
+// Manual DC1 / DC2
+bindButton("MANUAL_START_DC_1", "m_start_dc1");
+bindButton("MANUAL_STOP_DC1",   "m_stop_dc1");
+bindButton("MANUAL_START_DC_2", "m_start_dc2");
+bindButton("MANUAL_STOP_DC2",   "m_stop_dc2");
+
+// Reset
+bindButton("RESET_SYSTEM", "reset_system");
+bindButton("RESET_DC1",    "reset_dc1");
+bindButton("RESET_DC2",    "reset_dc2");
+
+/******************** Ô NHẬP ANALOG: GỬI GIÁ TRỊ MỚI *************************/
+function bindNumericField(inputId, eventName) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+
+    el.addEventListener("change", function () {
+        const value = Number(el.value);
+        if (isNaN(value)) {
+            alert("Giá trị phải là số");
+            return;
+        }
+        socket.emit(eventName, value);
+        console.log("CLIENT send:", eventName, value);
+    });
+}
+
+// CHỈ ô *_SET mới gửi xuống PLC
+bindNumericField("SP_VAI_REF_SET", "set_sp_vai_ref");
+
+/******************** NHẬN DỮ LIỆU TỪ SERVER *************************/
+// Bool
+socket.on("BTT_AUTO",          v => updateButton("BTT_AUTO", v));
+socket.on("BTT_MANUAL",        v => updateButton("BTT_MANUAL", v));
+socket.on("AUTO_START",        v => updateButton("AUTO_START", v));
+socket.on("AUTO_STOP",         v => updateButton("AUTO_STOP", v));
+socket.on("MANUAL_START_DC_1", v => updateButton("MANUAL_START_DC_1", v));
+socket.on("MANUAL_STOP_DC1",   v => updateButton("MANUAL_STOP_DC1", v));
+socket.on("MANUAL_START_DC_2", v => updateButton("MANUAL_START_DC_2", v));
+socket.on("MANUAL_STOP_DC2",   v => updateButton("MANUAL_STOP_DC2", v));
+
+// SP_VAI_REF chỉ gán vào ô VIEW (hiển thị)
+socket.on("SP_VAI_REF", v => {
+    const el = document.getElementById("SP_VAI_REF_VIEW");
+    if (el && v != null) el.value = v;
+});
+
+// Yêu cầu server gửi trạng thái ban đầu
+socket.emit("Client-send-data", true);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+/* ========== RESET CƠ BẢN ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    padding: 24px;
+    color: #333;
+}
+
+/* ========== TIÊU ĐỀ & NÚT BACK ========== */
+.logs-title {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-bottom: 18px;
+    background: #3a6ff7;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.back-btn:hover {
+    background: #2f5bd0;
+}
+
+/* ========== KHUNG CHỨA BẢNG ========== */
+.table-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto 28px auto;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px 18px 20px 18px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+}
+
+.table-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+/* ========== WRAPPER ĐỂ CÓ SCROLL NGANG/DỌC ========== */
+.table-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: auto;          /* scroll nếu quá rộng / quá cao */
+    max-height: 420px;       /* chiều cao phần bảng A */
+}
+
+.table-wrapper.small {
+    max-height: 260px;       /* bảng B thấp hơn */
+}
+
+/* Ẩn scroll bar xấu trên một số trình duyệt (không bắt buộc) */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+/* ========== BẢNG CHÍNH ========== */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* để cột không dính sát nhau */
+}
+
+/* Header */
+.table thead tr {
+    background: #3a6ff7;
+    color: #fff;
+}
+
+.table th {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-right: 1px solid #ffffff30;
+    white-space: nowrap;
+}
+
+.table th:last-child {
+    border-right: none;
+}
+
+/* Body */
+.table tbody tr {
+    background: #f9f9f9;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.table tbody tr:nth-child(even) {
+    background: #eef2ff;
+}
+
+.table td {
+    padding: 6px 10px;
+    font-size: 13px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Cột text của bảng B (event) cho phép xuống dòng */
+.table td.event-text {
+    text-align: left;
+    white-space: normal;
+}
+
+/* Hover row */
+.table tbody tr:hover {
+    background: #dce4ff !important;
+}
+
+/* Căn riêng cột thời gian cho dễ nhìn */
+.table td:first-child,
+.table th:first-child {
+    text-align: left;
+}
