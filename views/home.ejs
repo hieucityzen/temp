@@ -17,11 +17,12 @@
     <script src="js/FC1_common.js"></script>
 
     <script>
+        // Kết nối tới Node server
         var socket = io("http://localhost:3000");
     </script>
 
     <style>
-        /* bạn có thể chỉnh lại cho đẹp hơn */
+        /* Khối tốc độ đặt */
         .sp-vai-container{
             text-align:center;
             margin-top:10px;
@@ -37,6 +38,8 @@
             width:80px;
             text-align:right;
         }
+
+        
     </style>
 </head>
 
@@ -67,30 +70,36 @@
         <button id="RESET_SYSTEM">RESET HỆ THỐNG</button>
         <button id="RESET_DC1">RESET DC THU</button>
         <button id="RESET_DC2">RESET DC XẢ</button>
-         <!-- ======== HIỂN THỊ TỐC ĐỘ THỰC ĐC 1 ======== -->
-          <input id="SP_DC1" disabled="disabled" type="text" />
-<script>
-    fn_IOFieldDataShow("SP_DC1", "SP_DC1", 2);
-</script>
- <!-- ======== HIỂN THỊ TỐC ĐỘ THỰC ĐC 2 ======== -->
-          <input id="SP_DC2" disabled="disabled" type="text" />
-<script>
-    fn_IOFieldDataShow("SP_DC2", "SP_DC2", 2);
-</script>
 
+        <!-- ======== HIỂN THỊ TỐC ĐỘ THỰC ĐC1/ĐC2 (chỉ hiển thị) ======== -->
+        <input id="SP_DC1" disabled="disabled" type="text" />
+        <script> fn_IOFieldDataShow("SP_DC1", "SP_DC1", 2); </script>
 
-        <button id="btt_Screen_1" onclick="window.location.href='http://localhost:3000/logs';">THỐNG KÊ</button>
+        <input id="SP_DC2" disabled="disabled" type="text" />
+        <script> fn_IOFieldDataShow("SP_DC2", "SP_DC2", 2); </script>
+
+        <!-- Mở trang thống kê -->
+        <button id="btt_Screen_1" onclick="window.location.href='http://localhost:3000/logs';">
+            THỐNG KÊ
+        </button>
     </div>
+
+    <!-- ĐÈN BÁO LỖI TỔNG FAULT_ALL -->
+    <div id="fault_led" class="fault-led">FAULT</div>
 
     <div id="Screen_Main">
 
-        <!-- KHU VỰC TỐC ĐỘ ĐẶT: TRÊN HIỂN THỊ, DƯỚI CHỈNH -->
+        <!-- KHU VỰC TỐC ĐỘ ĐẶT: DƯỚI CHỈNH, TRÊN HIỂN THỊ -->
         <div class="sp-vai-container">
             <div class="sp-vai-row">
-                <span style="margin-left: -180px; font-size: 25px; color: rgb(233, 78, 17);">Tốc độ đặt mới:</span>
+                <span style="margin-left: -180px; font-size: 25px; color: rgb(233, 78, 17);">
+                    Tốc độ đặt mới:
+                </span>
+                <!-- ô dùng để sửa / gửi xuống PLC -->
                 <input id="SP_VAI_REF_SET" type="number">
             </div>
             <div class="sp-vai-row">
+                <!-- ô chỉ hiển thị giá trị đọc được từ PLC -->
                 <input id="SP_VAI_REF_VIEW" type="number" disabled>
             </div>
         </div>
@@ -195,7 +204,7 @@ function bindNumericField(inputId, eventName) {
     });
 }
 
-// CHỈ ô *_SET mới gửi xuống PLC
+// Chỉ ô *_SET mới gửi xuống PLC
 bindNumericField("SP_VAI_REF_SET", "set_sp_vai_ref");
 
 /******************** NHẬN DỮ LIỆU TỪ SERVER *************************/
@@ -209,13 +218,24 @@ socket.on("MANUAL_STOP_DC1",   v => updateButton("MANUAL_STOP_DC1", v));
 socket.on("MANUAL_START_DC_2", v => updateButton("MANUAL_START_DC_2", v));
 socket.on("MANUAL_STOP_DC2",   v => updateButton("MANUAL_STOP_DC2", v));
 
-// SP_VAI_REF chỉ gán vào ô VIEW (hiển thị)
+// Tốc độ đặt – chỉ hiển thị
 socket.on("SP_VAI_REF", v => {
     const el = document.getElementById("SP_VAI_REF_VIEW");
     if (el && v != null) el.value = v;
 });
 
-// Yêu cầu server gửi trạng thái ban đầu
+// ĐÈN BÁO FAULT_ALL
+socket.on("FAULT_ALL", v => {
+    const led = document.getElementById("fault_led");
+    if (!led) return;
+    if (v === true || v === 1) {
+        led.classList.add("fault-on");
+    } else {
+        led.classList.remove("fault-on");
+    }
+});
+
+// yêu cầu server gửi trạng thái ban đầu
 socket.emit("Client-send-data", true);
 
 </script>

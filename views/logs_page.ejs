@@ -4,12 +4,27 @@
     <meta charset="UTF-8">
     <title>Bảng thống kê hệ thống</title>
 
-    <!-- CHÚ Ý: có dấu / ở đầu để trỏ đúng thư mục public/CSS -->
-    <link rel="stylesheet" href="/CSS/logs_page.css">
+    <link rel="stylesheet" href="/CSS/logs_pages.css">
 </head>
 <body>
 
     <h1 class="logs-title">BẢNG THỐNG KÊ HỆ THỐNG</h1>
+
+    <!-- FORM LỌC THEO NGÀY -->
+    <form class="filter-form" method="get" action="/logs">
+        <label for="date" style="color: rgb(192, 233, 9);">Xem theo ngày:</label>
+        <input
+            type="date"
+            id="date"
+            name="date"
+            value="<%= selectedDate || '' %>"
+        >
+        <button type="submit">Lọc</button>
+
+        <% if (selectedDate) { %>
+            <a href="/logs" class="clear-filter">Xóa lọc</a>
+        <% } %>
+    </form>
 
     <a href="/" class="back-btn">← Trở về màn hình chính</a>
 
@@ -34,6 +49,7 @@
                         <th>SP_DC2</th>
                         <th>SP_VAI_REF</th>
                         <th>FAULT</th>
+                        <th>FAULT_ALL</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +68,7 @@
                             <td><%= row.SP_DC2 %></td>
                             <td><%= row.SP_VAI_REF %></td>
                             <td><%= row.SS_FAULT %></td>
+                            <td><%= row.FAULT_ALL %></td>
                         </tr>
                     <% }) %>
                 </tbody>

@@ -35,26 +35,28 @@ const SS_FAULT          = "SS_FAULT";
 const RESET_SYSTEM      = "RESET_SYSTEM";
 const RESET_DC1         = "RESET_DC1";
 const RESET_DC2         = "RESET_DC2";
+const FAULT_ALL         = "FAULT_ALL";   // đèn lỗi tổng
 
 // ================== LIST CÁC TAG ĐỂ ĐỌC LIÊN TỤC ==================
 const TAG_IDS = [
-  DEVICE_PREFIX + BTT_AUTO,
-  DEVICE_PREFIX + BTT_MANUAL,
-  DEVICE_PREFIX + MANUAL_START_DC_1,
-  DEVICE_PREFIX + MANUAL_STOP_DC1,
-  DEVICE_PREFIX + MANUAL_START_DC_2,
-  DEVICE_PREFIX + MANUAL_STOP_DC2,
-  DEVICE_PREFIX + AUTO_START,
-  DEVICE_PREFIX + AUTO_STOP,
-  DEVICE_PREFIX + SP_DC1,
-  DEVICE_PREFIX + SP_DC2,
-  DEVICE_PREFIX + SP_VAI_REF,
-  DEVICE_PREFIX + SS_FAULT
+  DEVICE_PREFIX + BTT_AUTO,          // 0
+  DEVICE_PREFIX + BTT_MANUAL,        // 1
+  DEVICE_PREFIX + MANUAL_START_DC_1, // 2
+  DEVICE_PREFIX + MANUAL_STOP_DC1,   // 3
+  DEVICE_PREFIX + MANUAL_START_DC_2, // 4
+  DEVICE_PREFIX + MANUAL_STOP_DC2,   // 5
+  DEVICE_PREFIX + AUTO_START,        // 6
+  DEVICE_PREFIX + AUTO_STOP,         // 7
+  DEVICE_PREFIX + SP_DC1,            // 8
+  DEVICE_PREFIX + SP_DC2,            // 9
+  DEVICE_PREFIX + SP_VAI_REF,        // 10
+  DEVICE_PREFIX + SS_FAULT,          // 11
+  DEVICE_PREFIX + FAULT_ALL          // 12
 ];
 
-let isAuto = false;
+let isAuto   = false;
 let isManual = true;
-let tagArr = [];
+let tagArr   = [];
 
 // ================== GHI EVENT LOG ==================
 async function logEvent(text) {
@@ -71,12 +73,14 @@ async function logEvent(text) {
 
 // ================== GHI LỊCH SỬ log_tags ==================
 function boolToInt(v) {
+  if (v === null || v === undefined) return null;
   return v ? 1 : 0;
 }
 
 async function logToDatabase() {
   try {
-    if (tagArr.length < 12) return;
+    // cần đủ 13 phần tử (0..12)
+    if (tagArr.length < 13) return;
 
     const sql = `
       INSERT INTO log_tags (
@@ -86,27 +90,29 @@ async function logToDatabase() {
         MANUAL_START_DC_2, MANUAL_STOP_DC2,
         AUTO_START, AUTO_STOP,
         SP_DC1, SP_DC2, SP_VAI_REF,
-        SS_FAULT
+        SS_FAULT, FAULT_ALL
       )
-      VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const params = [
-      boolToInt(tagArr[0]),
-      boolToInt(tagArr[1]),
-      boolToInt(tagArr[2]),
-      boolToInt(tagArr[3]),
-      boolToInt(tagArr[4]),
-      boolToInt(tagArr[5]),
-      boolToInt(tagArr[6]),
-      boolToInt(tagArr[7]),
-      tagArr[8] ?? null,
-      tagArr[9] ?? null,
-      tagArr[10] ?? null,
-      boolToInt(tagArr[11])
+      boolToInt(tagArr[0]),  // BTT_AUTO
+      boolToInt(tagArr[1]),  // BTT_MANUAL
+      boolToInt(tagArr[2]),  // MANUAL_START_DC_1
+      boolToInt(tagArr[3]),  // MANUAL_STOP_DC1
+      boolToInt(tagArr[4]),  // MANUAL_START_DC_2
+      boolToInt(tagArr[5]),  // MANUAL_STOP_DC2
+      boolToInt(tagArr[6]),  // AUTO_START
+      boolToInt(tagArr[7]),  // AUTO_STOP
+      tagArr[8]  ?? null,    // SP_DC1
+      tagArr[9]  ?? null,    // SP_DC2
+      tagArr[10] ?? null,    // SP_VAI_REF
+      boolToInt(tagArr[11]), // SS_FAULT
+      boolToInt(tagArr[12])  // FAULT_ALL
     ];
 
     await db.execute(sql, params);
+    console.log(">>> Ghi log MySQL OK");
   } catch (err) {
     console.error("Lỗi ghi MySQL:", err.message);
   }
@@ -128,14 +134,13 @@ async function fn_tagRead() {
       return item && item.s ? item.v : null;
     });
 
-    isAuto = !!tagArr[0];
+    isAuto   = !!tagArr[0];
     isManual = !!tagArr[1];
 
     console.log("TAG VALUES:", tagArr);
 
     fn_emit_tags();
     await logToDatabase();
-
   } catch (e) {
     console.log("Lỗi fn_tagRead:", e.message);
   }
@@ -144,9 +149,7 @@ async function fn_tagRead() {
 // ================== VIẾT TAG KEPWARE ==================
 async function fn_Data_Write(tag, value) {
   try {
-    const body = [
-      { id: DEVICE_PREFIX + tag, v: value }
-    ];
+    const body = [{ id: DEVICE_PREFIX + tag, v: value }];
 
     await axios.post(`${KEP_BASE_URL}/write`, body, {
       auth: { username: KEP_USER, password: KEP_PASS },
@@ -179,10 +182,62 @@ app.get("/", (req, res) => {
 });
 
 app.get("/logs", async (req, res) => {
-  const [history] = await db.query("SELECT * FROM log_tags ORDER BY ts DESC LIMIT 200");
-  const [events]  = await db.query("SELECT * FROM log_events ORDER BY ts DESC LIMIT 200");
-  res.render("logs_page", { history, events });
+  try {
+    const selectedDate = req.query.date || "";
+
+    let historySql  = "";
+    let historyArgs = [];
+    let eventsSql   = "";
+    let eventsArgs  = [];
+
+    if (selectedDate) {
+      historySql = `
+        SELECT *
+        FROM log_tags
+        WHERE DATE(ts) = ?
+        ORDER BY ts DESC
+        LIMIT 500
+      `;
+      eventsSql = `
+        SELECT *
+        FROM log_events
+        WHERE DATE(ts) = ?
+        ORDER BY ts DESC
+        LIMIT 500
+      `;
+      historyArgs = [selectedDate];
+      eventsArgs  = [selectedDate];
+    } else {
+      historySql = `
+        SELECT *
+        FROM log_tags
+        ORDER BY ts DESC
+        LIMIT 200
+      `;
+
+      eventsSql = `
+        SELECT *
+        FROM log_events
+        ORDER BY ts DESC
+        LIMIT 200
+      `;
+    }
+
+    const [history] = await db.query(historySql, historyArgs);
+    const [events]  = await db.query(eventsSql, eventsArgs);
+
+    res.render("logs_page", {
+      history,
+      events,
+      selectedDate   // ⬅ phải truyền biến này sang ejs
+    });
+
+  } catch (err) {
+    console.error("Lỗi /logs:", err.message);
+    res.status(500).send("DB error: " + err.message);
+  }
 });
+
 
 // ================== GỬI TAG TỚI WEB ==================
 function fn_emit_tags() {
@@ -198,6 +253,7 @@ function fn_emit_tags() {
   io.sockets.emit("SP_DC2",            tagArr[9]);
   io.sockets.emit("SP_VAI_REF",        tagArr[10]);
   io.sockets.emit("SS_FAULT",          tagArr[11]);
+  io.sockets.emit("FAULT_ALL",         tagArr[12]);
 }
 
 // ================== SOCKET.IO ==================
@@ -291,6 +347,8 @@ io.on("connection", socket => {
     await fn_Data_Write(MANUAL_STOP_DC1, false);
     await fn_Data_Write(MANUAL_START_DC_2, false);
     await fn_Data_Write(MANUAL_STOP_DC2, false);
+    await fn_Data_Write(FAULT_ALL, false);
+
     await fn_tagRead();
   });
 
@@ -327,4 +385,5 @@ io.on("connection", socket => {
     await fn_tagRead();
   });
 
+  // ❌ KHÔNG xử lý FAULT_ALL ở SERVER bằng document (đã bỏ đoạn sai)
 });
