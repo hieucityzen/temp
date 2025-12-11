@@ -1,33 +1,35 @@
-////////// YÊU CẦU DỮ LIỆU TỪ SERVER- REQUEST DATA ////////////
-var myVar = setInterval(myTimer, 100);
-function myTimer() {
-    socket.emit("Client-send-data", "Request data client");
-}
+// Dùng đúng socket đã tạo ở home.ejs
+const s = window.socket;
+
+// ========= YÊU CẦU DỮ LIỆU TỪ SERVER =========
+setInterval(() => {
+    if (!s || !s.connected) return;
+    s.emit("Client-send-data", "Request data client");
+}, 100);
 
 // Hàm hiển thị dữ liệu lên IO Field
-function fn_IOFieldDataShow(tag, IOField, tofix){
-    socket.on(tag, function(data){
-        if(tofix == 0){
-            document.getElementById(IOField).value = data;
-        } else {
-            document.getElementById(IOField).value = data.toFixed(tofix);
-        }
+function fn_IOFieldDataShow(tag, IOField, tofix) {
+    s.on(tag, function (data) {
+        const el = document.getElementById(IOField);
+        if (!el) return;
+
+        if (tofix === 0) el.value = data;
+        else el.value = Number(data).toFixed(tofix);
     });
 }
+
+// Chuyển màn hình
 function fn_ScreenChange(scr_1, scr_2, scr_3) {
-    document.getElementById(scr_1).style.display = 'block'; // Hiện
-    document.getElementById(scr_2).style.display = 'none';  // Ẩn hoàn toàn 1
-    document.getElementById(scr_3).style.display = 'none';  // Ẩn hoàn toàn 2
+    document.getElementById(scr_1).style.display = "block";
+    document.getElementById(scr_2).style.display = "none";
+    document.getElementById(scr_3).style.display = "none";
 }
 
-
-// Hàm hiển thị màu nút nhấn
-function fn_btt_Color(tag, bttID, on_Color, off_Color){
-    socket.on(tag,function(data){
-        if(data == true){
-            document.getElementById(bttID).style.backgroundColor = on_Color;
-        } else{
-            document.getElementById(bttID).style.backgroundColor = off_Color;
-        }
+// Đổi màu nút (nếu bạn còn dùng)
+function fn_btt_Color(tag, bttID, on_Color, off_Color) {
+    s.on(tag, function (data) {
+        const btn = document.getElementById(bttID);
+        if (!btn) return;
+        btn.style.backgroundColor = data ? on_Color : off_Color;
     });
 }

@@ -11,7 +11,7 @@
     <h1 class="logs-title">BẢNG THỐNG KÊ HỆ THỐNG</h1>
 
     <!-- FORM LỌC THEO NGÀY -->
-    <form class="filter-form" method="get" action="/logs">
+    <form class="filter-form" method="get" action="/logs" id="filterForm">
         <label for="date" style="color: rgb(192, 233, 9);">Xem theo ngày:</label>
         <input
             type="date"
@@ -20,6 +20,9 @@
             value="<%= selectedDate || '' %>"
         >
         <button type="submit">Lọc</button>
+
+        <!-- Nút xuất Excel dùng cùng ngày đang chọn -->
+        <button type="button" onclick="exportExcel()">Xuất Excel</button>
 
         <% if (selectedDate) { %>
             <a href="/logs" class="clear-filter">Xóa lọc</a>
@@ -50,6 +53,9 @@
                         <th>SP_VAI_REF</th>
                         <th>FAULT</th>
                         <th>FAULT_ALL</th>
+                        <th>SS_FAULT</th>
+                        <th>M_FAULT_DC1</th>
+                        <th>M_FAULT_DC2</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +75,9 @@
                             <td><%= row.SP_VAI_REF %></td>
                             <td><%= row.SS_FAULT %></td>
                             <td><%= row.FAULT_ALL %></td>
+                            <td><%= row.SS_FAULT %></td>
+                            <td><%= row.M_FAULT_DC1 %></td>
+                            <td><%= row.M_FAULT_DC2 %></td>
                         </tr>
                     <% }) %>
                 </tbody>
@@ -99,6 +108,18 @@
             </table>
         </div>
     </div>
+
+    <script>
+        function exportExcel() {
+            const date = document.getElementById('date').value;
+            let url = '/logs/export';
+            if (date) {
+                url += '?date=' + encodeURIComponent(date);
+            }
+            // chuyển sang route export -> trình duyệt sẽ tải file .xlsx
+            window.location.href = url;
+        }
+    </script>
 
 </body>
 </html>
